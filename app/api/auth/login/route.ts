@@ -3,10 +3,22 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = 'https://bdkbbggsbbkabycdmtdr.supabase.co'
 // Используем service_role key для обхода RLS (только на сервере!)
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY
+
+if (!supabaseServiceKey) {
+  console.error('ОШИБКА: SUPABASE_SERVICE_ROLE_KEY или SUPABASE_KEY не настроены!')
+}
 
 export async function POST(request: NextRequest) {
   try {
+    if (!supabaseServiceKey) {
+      console.error('ОШИБКА: Переменные окружения Supabase не настроены!')
+      return NextResponse.json(
+        { success: false, error: 'Ошибка конфигурации сервера. Обратитесь к администратору.' },
+        { status: 500 }
+      )
+    }
+
     const { username, password } = await request.json()
 
     if (!username || !password) {

@@ -2,10 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = 'https://bdkbbggsbbkabycdmtdr.supabase.co'
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY
+
+if (!supabaseServiceKey) {
+  console.error('ОШИБКА: SUPABASE_SERVICE_ROLE_KEY или SUPABASE_KEY не настроены!')
+}
 
 export async function GET() {
   try {
+    if (!supabaseServiceKey) {
+      return NextResponse.json(
+        { success: false, error: 'Ошибка конфигурации сервера' },
+        { status: 500 }
+      )
+    }
+
     // Создаём клиент с service_role key для обхода RLS
     const supabase = createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
@@ -42,6 +53,13 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!supabaseServiceKey) {
+      return NextResponse.json(
+        { success: false, error: 'Ошибка конфигурации сервера' },
+        { status: 500 }
+      )
+    }
+
     const clientData = await request.json()
 
     if (!clientData.full_name) {

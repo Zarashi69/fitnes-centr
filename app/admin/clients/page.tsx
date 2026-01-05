@@ -113,7 +113,7 @@ export default function ClientsPage() {
     if (editingClient.phone && editingClient.phone.trim()) {
       clientData.phone = editingClient.phone.trim()
     } else {
-      clientData.phone = null
+      clientData.phone = undefined
     }
 
     const response = await fetch(`/api/clients/${editingClient.id}`, {
